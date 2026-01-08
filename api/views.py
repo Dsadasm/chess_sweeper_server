@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 
 
 class DialyRecordViewSet(viewsets.ModelViewSet):
-    queryset = DailyRecord.objects.all()
+    queryset = DailyRecord.objects.all().order_by('point')
     serializer_class = DailyRecordSerializer
     filterset_class = DialyRecordFilter
     filter_backends = (filters.DjangoFilterBackend,)

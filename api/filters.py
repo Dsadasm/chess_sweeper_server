@@ -6,6 +6,7 @@ class DialyRecordFilter(filters.FilterSet):
         model = DailyRecord
         fields = {
             'created_at': ['exact', 'lt', 'gt'],
-            'points': ['exact', 'lt', 'gt'],
+            'point': ['exact', 'lt', 'gt'],
             'name': ['exact', 'icontains'],
+            'time': ['exact', 'lt', 'gt'],
         }
