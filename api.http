@@ -1,0 +1,38 @@
+GET http://localhost:8000/api/dailyrecords/ HTTP/1.1
+Content-Type: application/json
+
+###
+POST http://localhost:8000/api/dailyrecords/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Anson",
+    "point": 15,
+    "time": 20
+}
+
+###
+POST http://localhost:8000/api/auth/register/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "Sakura",
+    "password": "Sakura123"
+}
+
+###
+POST http://localhost:8000/api/auth/login/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "Sakura",
+    "password": "Sakura123"
+}
+
+###
+POST http://localhost:8000/api/auth/logout/ HTTP/1.1
+Content-Type: application/json
+
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc2ODEzODUwOCwiaWF0IjoxNzY4MDUyMTA4LCJqdGkiOiI0NmI1YzZlMzdmMTA0ZjE4YTIxNGU1YzE5ZDE1Yzg1MSIsInVzZXJfaWQiOiI1In0.wMk4HvQlcSwEjASVR8lnOJC-W3LkUjcZybJ51WGvTmI"
+}

@@ -5,13 +5,14 @@ from .serializers import DailyRecordSerializer, RegisterSerializer
 from .filters import DialyRecordFilter
 from django_filters import rest_framework as filters
 from rest_framework.permissions import AllowAny
-from django.contrib.auth.models import User
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from drf_spectacular.utils import extend_schema, OpenApiResponse
+from drf_spectacular.utils import inline_serializer
+from rest_framework import serializers
 
 class DialyRecordViewSet(viewsets.ModelViewSet):
     queryset = DailyRecord.objects.all().order_by('point')
@@ -21,14 +22,20 @@ class DialyRecordViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] # For testing
 
 class AuthViewSet(viewsets.ViewSet):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
 
     # Create a new user and return JWT tokens
+    @extend_schema(
+        description="Register a new user and obtain JWT tokens.",
+        request=RegisterSerializer,
+        responses={
+            201: OpenApiResponse(description="User created successfully."),
+            400: OpenApiResponse(description="Bad request or validation error."),
+        }
+    )
     @action(detail=False, methods=['post'])
     def register(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
@@ -44,6 +51,14 @@ class AuthViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # Behave same as TokenObtainPairView 
+    @extend_schema(
+        description="Login a user and obtain JWT tokens.",
+        request=TokenObtainPairSerializer,
+        responses={
+            200: OpenApiResponse(description="Tokens obtained successfully."),
+            400: OpenApiResponse(description="Invalid credentials."),
+        }
+    )
     @action(detail=False, methods=['post'])
     def login(self, request):
         serializer = TokenObtainPairSerializer(data=request.data)
@@ -53,6 +68,19 @@ class AuthViewSet(viewsets.ViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     # Blacklist the refresh token on logout
+    @extend_schema(
+        description="Logout a user by blacklisting the refresh token.",
+        request=inline_serializer(
+            name="LogoutSerializer",
+            fields={
+                'refresh': serializers.CharField(),
+            }
+        ),
+        responses={
+            205: OpenApiResponse(description="User logged out successfully."),
+            400: OpenApiResponse(description="Bad request or token error."),
+        }
+    )
     @action(detail=False, methods=['post'])
     def logout(self, request):
         try:
