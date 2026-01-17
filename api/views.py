@@ -15,7 +15,7 @@ from drf_spectacular.utils import inline_serializer
 from rest_framework import serializers
 
 class DialyRecordViewSet(viewsets.ModelViewSet):
-    queryset = DailyRecord.objects.all().order_by('point')
+    queryset = DailyRecord.objects.all().order_by('-point', 'time')
     serializer_class = DailyRecordSerializer
     filterset_class = DialyRecordFilter
     filter_backends = (filters.DjangoFilterBackend,)
